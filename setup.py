@@ -1,8 +1,12 @@
 import sys
 from cx_Freeze import setup, Executable
 
+
+additional_files = ['update.py']
+
+
 #Dependencies are automatically detected, but it might need fine tuning.
-build_exe_options = {"packages": ["os"], "includes": []}
+build_exe_options = {"packages": ["os"], "includes": [], "include_files":additional_files}
 
 
 #GUI applications require a different base on Windows (the default is for
@@ -11,10 +15,45 @@ build_exe_options = {"packages": ["os"], "includes": []}
 # if sys.platform == "win32":
 #     base = "Win32GUI"
 
+
+
 setup(
     name="PTelecom Bot.Ink",
-    version="1.3",
+    version="1.5",
     description="Faz automação de mensagens no WhatsApp",
     options={"build_exe": build_exe_options},
-    executables=[Executable("app.py", base=None, icon="icon.ico")]
+    executables=[Executable("Mensagem.Automatica.py", base=None, icon="icon.ico"),
+                 Executable("update.py", base=None, icon='')
+                 ]
 )
+
+
+
+# ["aspose-cells",
+# "attrs",
+# "certifi",
+# "cffi",
+# "charset-normalizer",
+# "cx-Logging",
+# "cx_Freeze",
+# "et-xmlfile",
+# "h11",
+# "idna",
+# "JPype1",
+# "lief",
+# "openpyxl",
+# "outcome",
+# "packaging",
+# "pycparser",
+# "PySocks",
+# "python-dotenv",
+# "requests",
+# "selenium",
+# "sniffio",
+# "sortedcontainers",
+# "trio",
+# "trio-websocket",
+# "typing_extensions",
+# "urllib3",
+# "webdriver-manager"
+# "wsproto"]

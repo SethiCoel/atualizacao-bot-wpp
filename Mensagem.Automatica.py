@@ -15,13 +15,34 @@ import os
 import sys
 import locale
 import platform
+import subprocess
+import requests
+import json
 
-__version__ = '1.4'
+__version__ = 'v1.5'
 
 load_da_pagina = '//*[@id="app"]/div/div[2]/div[3]/header/header/div/span/div/span/div[2]/div/span'
 botao_de_envio = '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[2]/button/span'
 botao_invalido = '//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/button' 
 
+def conferir_versão(versao_atual):
+    try:
+        response = requests.get('https://api.github.com/repos/SethiCoel/atualizacao-bot-wpp/releases/latest')
+        latest_release = json.loads(response.text)
+        ultima_versao = latest_release['tag_name']
+
+
+        if ultima_versao != versao_atual:
+            caminho_executavel = 'update.exe'
+            command = f'start {caminho_executavel}'
+            subprocess.Popen(command, shell=True)
+            sys.exit()
+        
+        else:
+            pass
+
+    except Exception as error:
+        print(error)
 
 def converter_xls_em_xlsx():
     try:    
@@ -58,7 +79,7 @@ def apagar_cache():
     if platform.system() == 'Windows':
         planilha = Path('Não Enviados/Planilha de Reenvio.xlsx')
 
-    #se a data de criação do arquivo for diferete de hj ele será apagado
+        #se a data de criação do arquivo for diferete de hj ele será apagado
         if planilha.exists():
             info_arquivo = os.stat(planilha)
             data_criacao = datetime.fromtimestamp(info_arquivo.st_ctime).date()
@@ -236,7 +257,6 @@ Instruções digite -> ajuda
         
         else:
             continue
-
 
 def mensagem_automatica():
     send_list = []
@@ -624,8 +644,8 @@ def programar():
     else:
         menu()
 
-
 def main():
+    conferir_versão(__version__)
     apagar_cache()
     converter_xls_em_xlsx()
     planinha_atualizada()
