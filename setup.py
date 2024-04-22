@@ -6,7 +6,7 @@ additional_files = ['update.py']
 
 
 #Dependencies are automatically detected, but it might need fine tuning.
-build_exe_options = {"packages": ["os"], "includes": [], "include_files":additional_files}
+build_exe_options = {"packages": ["os"], "includes": [], "include_files":[]}
 
 
 #GUI applications require a different base on Windows (the default is for
@@ -18,12 +18,12 @@ build_exe_options = {"packages": ["os"], "includes": [], "include_files":additio
 
 
 setup(
-    name="PTelecom Bot.Ink",
-    version="1.5",
+    name="AutomaBot.Ink",
+    version="1.6",
     description="Faz automação de mensagens no WhatsApp",
     options={"build_exe": build_exe_options},
     executables=[Executable("Mensagem.Automatica.py", base=None, icon="icon.ico"),
-                 Executable("update.py", base=None, icon='')
+                 
                  ]
 )
 

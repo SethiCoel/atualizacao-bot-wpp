@@ -39,6 +39,7 @@ def download_file(url, nome):
 def extrair_arquivo(arquivo_zip, extrair_para):
     with zipfile.ZipFile(arquivo_zip, 'r') as zip_ref:
         zip_ref.extractall(extrair_para)
+    os.remove(arquivo_zip)
 
 def abrir_programa():
     caminho_executavel = f'Mensagem.Automatica.exe'

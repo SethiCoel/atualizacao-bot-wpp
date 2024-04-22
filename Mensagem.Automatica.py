@@ -19,7 +19,7 @@ import subprocess
 import requests
 import json
 
-__version__ = 'v1.5'
+__version__ = 'v1.6'
 
 load_da_pagina = '//*[@id="app"]/div/div[2]/div[3]/header/header/div/span/div/span/div[2]/div/span'
 botao_de_envio = '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[2]/button/span'
@@ -33,7 +33,7 @@ def conferir_versão(versao_atual):
 
 
         if ultima_versao != versao_atual:
-            caminho_executavel = 'update.exe'
+            caminho_executavel = 'update/update.exe'
             command = f'start {caminho_executavel}'
             subprocess.Popen(command, shell=True)
             sys.exit()
@@ -222,7 +222,7 @@ def planilha_de_reenvio():
 def menu():
     while True:
         os.system('cls')
-        print('''WhatsApp Bot de Mensagem Automática
+        print(f'''WhatsApp Bot de Mensagem Automática                             versão{__version__} 
 
 (1) Ativar Mensagem Automática
 (2) Tentar Reenviar Mensagens 
