@@ -19,11 +19,20 @@ import subprocess
 import requests
 import json
 
-__version__ = 'v1.6'
+__version__ = 'v1.7'
 
 load_da_pagina = '//*[@id="app"]/div/div[2]/div[3]/header/header/div/span/div/span/div[2]/div/span'
 botao_de_envio = '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[2]/button/span'
 botao_invalido = '//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/button' 
+
+
+def editar_mensagem():
+    msg = Path('Mensagem.txt')
+
+    if not msg.exists():
+
+        with open('Mensagem.txt', 'w') as arquivo:
+            pass
 
 def conferir_versão(versao_atual):
     try:
@@ -33,13 +42,14 @@ def conferir_versão(versao_atual):
 
 
         if ultima_versao != versao_atual:
+            print('Nova versão disponível!')
+            sleep(2)
+
             caminho_executavel = 'update/update.exe'
             command = f'start {caminho_executavel}'
             subprocess.Popen(command, shell=True)
             sys.exit()
         
-        else:
-            pass
 
     except Exception as error:
         print(error)
@@ -113,6 +123,7 @@ def planinha_atualizada():
 
 
     diretorio = "Planilha MK-AUTH/"
+    arquivo_att = Path('Planilha Atualizada.xlsx')
 
     # Listar todos os arquivos no diretório
     arquivos = os.listdir(diretorio)
@@ -126,12 +137,19 @@ def planinha_atualizada():
 
 
     if arquivo_xlsx:
+
         try:
-            print("Planilha encontrada!")
-            sleep(1)
-            
-            print('Criando uma nova planilha atualizada...')
-            sleep(1)
+
+            if not arquivo_att.exists():
+                print("Planilha encontrada!")
+                sleep(1)
+                
+                print('Criando uma nova planilha atualizada...')
+                sleep(1)
+
+                print('Planilha atualizada criada com sucesso!')
+                sleep(1)
+
 
             workbook = openpyxl.load_workbook(f'{arquivo_xlsx}')
     
@@ -145,23 +163,24 @@ def planinha_atualizada():
 
             for id, linha in enumerate(pagina_clientes.iter_rows(min_row=3)):
                 
-                print(f'{id}: {linha[1].value}| Número: {linha[15].value} | Vencimento: {linha[25].value}')
 
+                if arquivo_att.exists():
+                    pass
+
+                else:
+
+                    print(f'{id}: {linha[1].value}| Número: {linha[15].value} | Vencimento: {linha[25].value}')
+                
 
                 nome = linha[1].value
                 numero = linha[15].value
                 vencimento = linha[25].value
-
+                
 
                 ws.append([f'{nome}', f'{numero}', f'{vencimento}'])
-
-            sleep(1)
             
             os.system('cls')
-            print('Planilha atualizada criada com sucesso!')
             wb.save('Planilha Atualizada.xlsx')
-            sleep(1)
-
 
             # Carregando a planilha original e a planilha cópia
             wb_original = load_workbook(f'{arquivo_xlsx}')
@@ -177,7 +196,7 @@ def planinha_atualizada():
             ws_copia.column_dimensions['C'].width = 15
 
             wb_copia.save('Planilha Atualizada.xlsx')
-
+            
 
         except KeyError:
             os.system('cls')
@@ -189,8 +208,8 @@ def planinha_atualizada():
         except ImportError as error:
             print('Erro de importação:',error)
 
-    arquivo = Path('Planilha Atualizada.xlsx')
-    if not arquivo.exists():
+    
+    if not arquivo_att.exists():
         os.system('cls')
         cor('Nenhuma Planilha encontrada!', 'vermelho')
         input('Pressione ENTER para fechar')
@@ -222,11 +241,12 @@ def planilha_de_reenvio():
 def menu():
     while True:
         os.system('cls')
-        print(f'''WhatsApp Bot de Mensagem Automática                             versão{__version__} 
+        print(f'''WhatsApp Bot de Mensagem Automática                          versão:{__version__} 
 
 (1) Ativar Mensagem Automática
 (2) Tentar Reenviar Mensagens 
 (3) Programar o BOT
+(4) Verificar mensagem
     
               
 Instruções digite -> ajuda              
@@ -254,6 +274,21 @@ Instruções digite -> ajuda
 
         if opcao == '3':
             programar()
+        
+        if opcao == '4':
+            os.system('cls')
+            mensagem = '''*Mensagem Automática:*
+
+Olá {XX}, seu boleto vence dia {XX} (amanhã).'''
+                
+            with open('mensagem.txt', 'r', encoding='utf-8') as arquivo:
+                texto = arquivo.read()
+                nao_modificavel = f'\033[0;34;40m{mensagem}\033[m'
+                modificavel = f'\033[0;32;40m{texto}\033[m'
+                cor('(Apenas o texto em verde pode ser modificado)\n','vermelho')
+                print(nao_modificavel,modificavel)
+            
+            input('\n\nPressione ENTER para voltar')
         
         else:
             continue
@@ -336,24 +371,20 @@ def mensagem_automatica():
                     
                     workbook.save('Não Enviados/Planilha de Reenvio.xlsx')
                     continue
+                
 
                 # Mensagem de exemplo que os clientes receberá contendo o nome e o vencimento. Sendo possível a troca a mensagem para a que mais agradar
                 mensagem = f'''*Mensagem Automática:*
 
-Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã). Venha pagar presencialmente ou utilize nossos meios de pagamento:
+Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã).'''
+                
+                with open('mensagem.txt', 'r', encoding='utf-8') as arquivo:
+                    texto = arquivo.read()
+                    msg = f'{mensagem} {texto}'
 
-Pix CNPJ: 26.752.862/0001-64 | Plnalto Telecom
-
-Conta para depósito: 
-
-Caixa Econômica Federal : 3880 1288 000981858801-6 Marlene de Jesus Coelho
-
-Não se esqueça de nos enviar o comprovante!
-
-Caso o pagamento já tenha sido efetuado, desconsidere esta mensagem.'''
                 try:
                     navegador = webdriver.Chrome(service=servico, options=chrome_options)
-                    navegador.get(f'https://web.whatsapp.com/send?phone={telefone}&text={quote(mensagem)}')
+                    navegador.get(f'https://web.whatsapp.com/send?phone={telefone}&text={quote(msg)}')
 
 
                     WebDriverWait(navegador, 6000).until(
@@ -498,20 +529,15 @@ def reenviar_mensagem():
                 # Mensagem de exemplo que os clientes receberá contendo o nome e o vencimento. Sendo possível a troca a mensagem para a que mais agradar
                 mensagem = f'''*Mensagem Automática:*
 
-Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã). Venha pagar presencialmente ou utilize nossos meios de pagamento:
+Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã).'''
+                
+                with open('mensagem.txt', 'r', encoding='utf-8') as arquivo:
+                    texto = arquivo.read()
+                    msg = f'{mensagem} {texto}'
 
-Pix CNPJ: 26.752.862/0001-64 | Plnalto Telecom
-
-Conta para depósito: 
-
-Caixa Econômica Federal : 3880 1288 000981858801-6 Marlene de Jesus Coelho
-
-Não se esqueça de nos enviar o comprovante!
-
-Caso o pagamento já tenha sido efetuado, desconsidere esta mensagem.'''
                 try:
                     navegador = webdriver.Chrome(service=servico, options=chrome_options)
-                    navegador.get(f'https://web.whatsapp.com/send?phone={telefone}&text={quote(mensagem)}')
+                    navegador.get(f'https://web.whatsapp.com/send?phone={telefone}&text={quote(msg)}')
 
                     WebDriverWait(navegador, 6000).until(
                         EC.element_to_be_clickable((By.XPATH, load_da_pagina))
@@ -646,9 +672,10 @@ def programar():
 
 def main():
     conferir_versão(__version__)
-    apagar_cache()
     converter_xls_em_xlsx()
+    editar_mensagem()
     planinha_atualizada()
+    apagar_cache()
     menu()
 
 def cor(texto, cor=''):

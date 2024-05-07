@@ -12,8 +12,7 @@ def atualizar_programa():
         latest_release = json.loads(response.text)
         ultima_versao = latest_release['tag_name']
 
-        print('Nova versão encontrada!')
-        sleep(1)
+
         nome_do_arquivo = latest_release['assets'][0]['name']
         download_url = latest_release['assets'][0]['browser_download_url']
         download_file(download_url, nome_do_arquivo)
@@ -39,9 +38,12 @@ def download_file(url, nome):
 def extrair_arquivo(arquivo_zip, extrair_para):
     with zipfile.ZipFile(arquivo_zip, 'r') as zip_ref:
         zip_ref.extractall(extrair_para)
+    
+    sleep(1)
     os.remove(arquivo_zip)
 
 def abrir_programa():
+    sleep(1)
     caminho_executavel = f'Mensagem.Automatica.exe'
     command = f'start {caminho_executavel}'
     subprocess.Popen(command, shell=True)

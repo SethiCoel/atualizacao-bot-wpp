@@ -2,7 +2,7 @@ import sys
 from cx_Freeze import setup, Executable
 
 
-additional_files = ['update.py']
+additional_files = ['como_usar.txt']
 
 
 #Dependencies are automatically detected, but it might need fine tuning.
@@ -19,7 +19,7 @@ build_exe_options = {"packages": ["os"], "includes": [], "include_files":[]}
 
 setup(
     name="AutomaBot.Ink",
-    version="1.6",
+    version="1.7",
     description="Faz automação de mensagens no WhatsApp",
     options={"build_exe": build_exe_options},
     executables=[Executable("Mensagem.Automatica.py", base=None, icon="icon.ico"),
