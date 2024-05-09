@@ -255,7 +255,7 @@ def planilha_de_reenvio():
 def menu():
     while True:
         os.system('cls')
-        print(f'''WhatsApp Bot de Mensagem Automática                          versão:{__version__} 
+        print(f'''WhatsApp Bot de Mensagem Automática                          versão:{versao()} 
 
 (1) Ativar Mensagem Automática
 (2) Tentar Reenviar Mensagens 
