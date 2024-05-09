@@ -61,7 +61,6 @@ def conferir_versão(versao_atual):
             caminho_executavel = 'update/update.exe'
             command = f'start {caminho_executavel}'
             subprocess.Popen(command, shell=True)
-            sleep(2)
             sys.exit()
         
 
@@ -297,7 +296,7 @@ Olá {XX}, seu boleto vence dia {XX} (amanhã).'''
                 
             with open('mensagem.txt', 'r', encoding='utf-8') as arquivo:
                 texto = arquivo.read()
-                nao_modificavel = f'\033[0;34;40m{mensagem}\033[m'
+                nao_modificavel = f'\033[0;36;40m{mensagem}\033[m'
                 modificavel = f'\033[0;32;40m{texto}\033[m'
                 cor('(Apenas o texto em verde pode ser modificado)\n','vermelho')
                 print(nao_modificavel,modificavel)

@@ -39,7 +39,7 @@ def download_file():
                 f.write(response.content)
 
             print('Atualização Finalizada!')
-            
+
     except Exception as error:
         print(error)
         input()
@@ -55,7 +55,15 @@ def extrair_arquivo():
         if arquivo.exists():
 
             with zipfile.ZipFile(nome_do_arquivo, 'r') as zip_ref:
-                zip_ref.extractall(diretorio_atual)
+                
+                for nome_arquivo in zip_ref.namelist():
+                    
+                    print(nome_arquivo)
+
+                    if nome_arquivo.startswith('update/'):
+                        continue
+                    
+                    zip_ref.extract(nome_arquivo, diretorio_atual)
             
             caminho_arquivo = f'{diretorio_atual}/{nome_do_arquivo}'
             
@@ -81,5 +89,5 @@ def abrir_programa():
 if __name__ == '__main__':
     download_file()
     extrair_arquivo()
-    # abrir_programa()
+    abrir_programa()
 
