@@ -19,12 +19,26 @@ import subprocess
 import requests
 import json
 
-__version__ = 'v1.7'
 
 load_da_pagina = '//*[@id="app"]/div/div[2]/div[3]/header/header/div/span/div/span/div[2]/div/span'
 botao_de_envio = '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[2]/button/span'
 botao_invalido = '//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/button' 
 
+
+
+def versao():
+    versao = "1.8"
+
+
+    caminho_arquivo_versao = "versao.txt"
+
+    with open(caminho_arquivo_versao, "w") as arquivo_versao:
+        arquivo_versao.write(versao)
+
+    with open('versao.txt', 'r', encoding='utf-8') as arquivo:
+        texto = arquivo.read()
+        
+    return texto
 
 def editar_mensagem():
     msg = Path('Mensagem.txt')
@@ -43,11 +57,11 @@ def conferir_versão(versao_atual):
 
         if ultima_versao != versao_atual:
             print('Nova versão disponível!')
-            sleep(2)
 
             caminho_executavel = 'update/update.exe'
             command = f'start {caminho_executavel}'
             subprocess.Popen(command, shell=True)
+            sleep(2)
             sys.exit()
         
 
@@ -671,11 +685,12 @@ def programar():
         menu()
 
 def main():
-    conferir_versão(__version__)
+    versao()
+    conferir_versão(versao())
+    apagar_cache()
     converter_xls_em_xlsx()
     editar_mensagem()
     planinha_atualizada()
-    apagar_cache()
     menu()
 
 def cor(texto, cor=''):
