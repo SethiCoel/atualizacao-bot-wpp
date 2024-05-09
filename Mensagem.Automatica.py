@@ -27,7 +27,7 @@ botao_invalido = '//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]
 
 
 def versao():
-    versao = "1.8"
+    versao = "v1.8"
 
 
     caminho_arquivo_versao = "versao.txt"
