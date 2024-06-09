@@ -27,7 +27,7 @@ botao_invalido = '//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]
 
 
 def versao():
-    versao = "v1.9"
+    versao = "v1.10"
 
 
     caminho_arquivo_versao = "versao.txt"
@@ -254,7 +254,7 @@ def planilha_de_reenvio():
 def menu():
     while True:
         os.system('cls')
-        print(f'''WhatsApp Bot de Mensagem Automática                          versão:{versao()} 
+        print(f'''WhatsApp Bot de Mensagem Automática                                                             versão:{versao()} 
 
 (1) Ativar Mensagem Automática
 (2) Tentar Reenviar Mensagens 
@@ -336,7 +336,7 @@ def mensagem_automatica():
         EC.element_to_be_clickable((By.XPATH, load_da_pagina))
     )
 
-    sleep(2)
+    sleep(3)
     navegador.quit()
 
     workbook = openpyxl.load_workbook('Planilha Atualizada.xlsx')
@@ -404,7 +404,7 @@ Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã).'''
                         EC.element_to_be_clickable((By.XPATH, load_da_pagina))
                     )
                                  
-                    sleep(1)
+                    sleep(3)
 
                     numero_invalido = WebDriverWait(navegador, 3).until(
                         EC.element_to_be_clickable((By.XPATH, botao_invalido))
@@ -446,7 +446,7 @@ Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã).'''
                     
 
                 finally:
-                    sleep(1.5)
+                    sleep(5)
                     navegador.quit()
     
     locale.setlocale(locale.LC_ALL, 'pt_BR.utf-8')
@@ -503,7 +503,7 @@ def reenviar_mensagem():
         EC.element_to_be_clickable((By.XPATH, load_da_pagina))
     )
 
-    sleep(2)
+    sleep(3)
     navegador.quit()
 
     workbook = openpyxl.load_workbook('Não Enviados/Planilha de Reenvio.xlsx')
@@ -556,7 +556,7 @@ Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã).'''
                         EC.element_to_be_clickable((By.XPATH, load_da_pagina))
                     )
 
-                    sleep(1)
+                    sleep(3)
 
                     numero_invalido = WebDriverWait(navegador, 3).until(
                         EC.element_to_be_clickable((By.XPATH, botao_invalido))
@@ -589,7 +589,7 @@ Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã).'''
                     
 
                 finally:
-                    sleep(1.5)
+                    sleep(3)
                     navegador.quit()
 
     
