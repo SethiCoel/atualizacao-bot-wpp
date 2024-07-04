@@ -20,15 +20,14 @@ import requests
 import json
 
 
-load_da_pagina = '//*[@id="app"]/div/div[2]/div[3]/header/header/div/span/div/span/div[2]/div/span'
+load_da_pagina = '//*[@id="app"]/div/div[2]/div[3]/header/div[2]/div/span/div[5]/div/span'
 botao_de_envio = '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[2]/button/span'
 botao_invalido = '//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/button' 
 
 
 
 def versao():
-    versao = "v1.10"
-
+    versao = "v1.10.1"
 
     caminho_arquivo_versao = "versao.txt"
 
@@ -49,6 +48,7 @@ def editar_mensagem():
             pass
 
 def conferir_versão(versao_atual):
+    os.system('cls')
     try:
         response = requests.get('https://api.github.com/repos/SethiCoel/atualizacao-bot-wpp/releases/latest')
         latest_release = json.loads(response.text)
@@ -57,11 +57,24 @@ def conferir_versão(versao_atual):
 
         if ultima_versao != versao_atual:
             print('Nova versão disponível!')
+            
+            atualizar = int(input('''
+Deseja atualizar o programa?
+ 
+(1) Atualizar
+(2) Não atualizar 
 
-            caminho_executavel = 'update/update.exe'
-            command = f'start {caminho_executavel}'
-            subprocess.Popen(command, shell=True)
-            sys.exit()
+Escolha uma opção: '''))
+
+            if atualizar == 1:
+
+                caminho_executavel = 'update/update.exe'
+                command = f'start {caminho_executavel}'
+                subprocess.Popen(command, shell=True)
+                sys.exit()
+
+            elif atualizar == 2:
+                menu()
         
 
     except Exception as error:
