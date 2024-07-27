@@ -27,7 +27,7 @@ botao_invalido = '//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]
 
 
 def versao():
-    versao = "v1.10.1"
+    versao = "v1.11.0"
 
     caminho_arquivo_versao = "versao.txt"
 
@@ -36,7 +36,8 @@ def versao():
 
     with open('versao.txt', 'r', encoding='utf-8') as arquivo:
         texto = arquivo.read()
-        
+    
+    print(texto)
     return texto
 
 def editar_mensagem():
@@ -264,6 +265,138 @@ def planilha_de_reenvio():
 
         wb.save('Não Enviados/Planilha de Reenvio.xlsx') 
 
+def caminho_site():
+
+    nome_do_arquivo = Path('link do sistema.txt')
+
+    if not nome_do_arquivo.exists():
+        with open(nome_do_arquivo, "w") as arquivo_sistema:
+            pass
+
+    with open(nome_do_arquivo, 'r', encoding='utf-8') as arquivo:
+        link = arquivo.read()
+    
+        print(link)
+        return link
+
+def baixar_planilha():
+    os.system('cls')
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+
+    session_data_directory = os.path.join(current_directory, "session_data")
+
+    # Verifica se a pasta de sessão existe, senão a cria
+    if not os.path.exists(session_data_directory):
+        os.makedirs(session_data_directory)
+
+    chrome_options = Options()
+
+    # Obtém o diretório atual
+    download_dir = os.getcwd()
+
+    # Define as preferências de download
+    prefs = {
+        "download.default_directory": download_dir,  # Caminho para a pasta de download (pasta atual)
+        "download.prompt_for_download": False,  # Não solicitar confirmação de download
+        "download.directory_upgrade": True,
+        "safebrowsing.enabled": True,
+        "download.safebrowsing.enabled": True,
+        "safebrowsing.disable_download_protection": True  # Desativa a proteção de download
+    }
+
+    chrome_options.add_experimental_option("prefs", prefs)
+
+
+    chrome_options.add_argument(f'--user-data-dir={session_data_directory}')
+    chrome_options.add_argument('--profile-directory=Default')
+    chrome_options.add_argument('--disable-extensions')
+    chrome_options.add_argument('--disable-popup-blocking')
+
+    chrome_options.add_experimental_option("detach", True)
+    servico = Service(ChromeDriverManager().install())
+    
+    navegador = webdriver.Chrome(service=servico, options=chrome_options)
+    navegador.get(f'{caminho_site()}')
+    
+    load_pagina = '//*[@id="systopo"]/div[1]/div/img'
+    botao_1 = '//*[@id="navMenu"]/div[1]/div[3]/div[1]'
+    botao_2 = '//*[@id="menu_clientes"]/a[1]'
+    botao_3 = '//*[@id="checkAll"]'
+    botao_4 = '//*[@id="selecionador"]/tr/td/label'
+    botao_5 = '//*[@id="run_exportar"]/span/i'
+    botao_6 = '//*[@id="envXLS"]'
+
+    try:
+        WebDriverWait(navegador, 6000).until(
+            EC.element_to_be_clickable((By.XPATH, load_pagina))
+        )
+    #/////////////////////////////////////////////////////////////////////
+
+        click_botao_1 = WebDriverWait(navegador, 6000).until(
+            EC.element_to_be_clickable((By.XPATH, botao_1))
+        )
+        
+        click_botao_1.click()
+
+    #//////////////////////////////////////////////////////////////////////
+    
+        click_botao_2 = WebDriverWait(navegador, 6000).until(
+            EC.element_to_be_clickable((By.XPATH, botao_2))
+        )
+        
+        click_botao_2.click()
+
+    #//////////////////////////////////////////////////////////////////////
+
+        click_botao_3 = WebDriverWait(navegador, 6000).until(
+            EC.element_to_be_clickable((By.XPATH, botao_3))
+        )
+        
+        click_botao_3.click()
+
+    #//////////////////////////////////////////////////////////////////////
+
+        click_botao_4 = WebDriverWait(navegador, 6000).until(
+            EC.element_to_be_clickable((By.XPATH, botao_4))
+        )
+        
+        click_botao_4.click()
+
+    #//////////////////////////////////////////////////////////////////////
+
+        click_botao_5 = WebDriverWait(navegador, 6000).until(
+            EC.element_to_be_clickable((By.XPATH, botao_5))
+        )
+        
+        click_botao_5.click()
+
+    #//////////////////////////////////////////////////////////////////////
+
+        click_botao_6 = WebDriverWait(navegador, 6000).until(
+            EC.element_to_be_clickable((By.XPATH, botao_6))
+        )
+        
+        click_botao_6.click()
+        os.system('cls')
+        sleep(2)
+        navegador.quit()
+
+        os.system('cls')
+        cor('Planilha baixada com sucesso!', 'verde')
+        input('\nPressione qualquer tecla para voltar')
+
+        main()
+
+
+    except:
+        os.system('cls')
+
+        navegador.quit()
+
+        cor('Login ou senha incorretos!, tente novamente', 'vermelho')
+        input('\nPressione qualquer tecla para tentar novamente')
+        baixar_planilha()
+
 def menu():
     while True:
         os.system('cls')
@@ -272,7 +405,8 @@ def menu():
 (1) Ativar Mensagem Automática
 (2) Tentar Reenviar Mensagens 
 (3) Programar o BOT
-(4) Verificar mensagem
+(4) Verificar a mensagem
+(5) Baixar planilha do sistema
     
               
 Instruções digite -> ajuda              
@@ -316,6 +450,9 @@ Olá {XX}, seu boleto vence dia {XX} (amanhã).'''
             
             input('\n\nPressione ENTER para voltar')
         
+        if opcao == '5':
+            baixar_planilha()
+
         else:
             continue
 
@@ -697,6 +834,7 @@ def programar():
         menu()
 
 def main():
+    caminho_site()
     versao()
     conferir_versão(versao())
     apagar_cache()
@@ -781,3 +919,4 @@ assim que for domingo 7:00 Horas ele começará o serviço e assim que acabar ir
 
 if __name__=='__main__':
     main()
+    
