@@ -18,16 +18,16 @@ import platform
 import subprocess
 import requests
 import json
+import signal
 
-
-load_da_pagina = '//*[@id="app"]/div/div[2]/div[3]/header/div[2]/div/span/div[5]/div/span'
+load_da_pagina = '//*[@id="app"]/div/div[2]/div[3]/header/header/div/span/div/span/div[2]/div/span'
 botao_de_envio = '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[2]/button/span'
-botao_invalido = '//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/button' 
+botao_invalido = '//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/button/div/div' 
 
 
 
 def versao():
-    versao = "v1.11.0"
+    versao = "v1.11.3"
 
     caminho_arquivo_versao = "versao.txt"
 
@@ -37,7 +37,6 @@ def versao():
     with open('versao.txt', 'r', encoding='utf-8') as arquivo:
         texto = arquivo.read()
     
-    print(texto)
     return texto
 
 def editar_mensagem():
@@ -57,6 +56,7 @@ def conferir_versão(versao_atual):
 
 
         if ultima_versao != versao_atual:
+
             print('Nova versão disponível!')
             
             atualizar = int(input('''
@@ -239,8 +239,8 @@ def planinha_atualizada():
     if not arquivo_att.exists():
         os.system('cls')
         cor('Nenhuma Planilha encontrada!', 'vermelho')
-        input('Pressione ENTER para fechar')
-        sys.exit()
+        input('Pressione ENTER para continuar')
+        menu()
 
 
     else:
@@ -276,10 +276,10 @@ def caminho_site():
     with open(nome_do_arquivo, 'r', encoding='utf-8') as arquivo:
         link = arquivo.read()
     
-        print(link)
         return link
 
 def baixar_planilha():
+
     os.system('cls')
     current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -291,6 +291,8 @@ def baixar_planilha():
 
     chrome_options = Options()
 
+
+
     # Obtém o diretório atual
     download_dir = os.getcwd()
 
@@ -301,7 +303,6 @@ def baixar_planilha():
         "download.directory_upgrade": True,
         "safebrowsing.enabled": True,
         "download.safebrowsing.enabled": True,
-        "safebrowsing.disable_download_protection": True  # Desativa a proteção de download
     }
 
     chrome_options.add_experimental_option("prefs", prefs)
@@ -311,6 +312,8 @@ def baixar_planilha():
     chrome_options.add_argument('--profile-directory=Default')
     chrome_options.add_argument('--disable-extensions')
     chrome_options.add_argument('--disable-popup-blocking')
+    chrome_options.add_argument("--start-maximized")  # Inicia o Chrome maximizado
+    
 
     chrome_options.add_experimental_option("detach", True)
     servico = Service(ChromeDriverManager().install())
@@ -377,15 +380,22 @@ def baixar_planilha():
         )
         
         click_botao_6.click()
+        
         os.system('cls')
-        sleep(2)
+        
+        sleep(3)
+        
         navegador.quit()
 
         os.system('cls')
         cor('Planilha baixada com sucesso!', 'verde')
-        input('\nPressione qualquer tecla para voltar')
+        input('\nPressione ENTER para voltar')
 
-        main()
+        caminho_executavel = 'Mensagem.Automatica.exe'
+        command = f'start {caminho_executavel}'
+        subprocess.Popen(command, shell=True)
+        
+        os.kill(os.getpid(), signal.SIGTERM)
 
 
     except:
@@ -500,13 +510,14 @@ def mensagem_automatica():
         telefone = linha[1].value
         vencimento = linha[2].value
 
+
         if vencimento is not None:
-            
-            data_antecipada = timedelta(days=int(vencimento)) - timedelta(days=1)        
-            data_atual = datetime.now().day
+
+            data_atual = datetime.now()
+            data_antecipada = data_atual + timedelta(days=1)
 
             # Faz a verificação da data, caso seja um dia antes do vencimento ele enviará a mensagem, senão irá ignorar
-            if data_antecipada.days == data_atual:
+            if data_antecipada.day == vencimento:
 
                 # Caso o número seja vazio ele é alertado e registrado na planilha "Planilha de Reenvio"
                 if telefone is None or telefone == '' or telefone == 'None':
@@ -546,8 +557,20 @@ Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã).'''
                     msg = f'{mensagem} {texto}'
 
                 try:
+
+                    telefone = str(telefone)
+                    
+                    if '(' in telefone or ')' in telefone:
+                        telefone_formatado = telefone.replace('(', '').replace(')', '')
+
+                        telefone_formatado = f'{float(telefone_formatado):.0f}'
+                    
+                    else:
+                        telefone_formatado = f'{float(telefone):.0f}'
+
+
                     navegador = webdriver.Chrome(service=servico, options=chrome_options)
-                    navegador.get(f'https://web.whatsapp.com/send?phone={telefone}&text={quote(msg)}')
+                    navegador.get(f'https://web.whatsapp.com/send?phone={telefone_formatado}&text={quote(msg)}')
 
 
                     WebDriverWait(navegador, 6000).until(
@@ -574,7 +597,7 @@ Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã).'''
                     while sheet.cell(row=linha, column=coluna).value is not None:
                         linha += 1
 
-                    dados = [f'{nome}', f'{telefone}', f'{vencimento}', 'Número Inválido']
+                    dados = [f'{nome}', f'{float(telefone):.0f}', f'{vencimento}', 'Número Inválido']
                     
                     for col, dado in enumerate(dados, start=1):
                 
