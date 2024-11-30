@@ -20,14 +20,18 @@ import requests
 import json
 import signal
 
-load_da_pagina = '//*[@id="app"]/div/div[2]/div[3]/header/header/div/span/div/span/div[2]/div/span'
-botao_de_envio = '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[2]/button/span'
-botao_invalido = '//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/button/div/div' 
+#pegar informações direto da api
+api = requests.get('https://toolbox-rosy-psi.vercel.app/wppb')
+botoes = json.loads(api.text)
+
+load_da_pagina = botoes['botao_load']
+botao_de_envio = botoes['botao_enviar']
+botao_invalido = botoes['botao_invalido'] 
 
 
 
 def versao():
-    versao = "v1.11.3"
+    versao = "v1.12.1"
 
     caminho_arquivo_versao = "versao.txt"
 
@@ -484,6 +488,7 @@ def mensagem_automatica():
     chrome_options.add_argument('--profile-directory=Default')
     chrome_options.add_argument('--disable-extensions')
     chrome_options.add_argument('--disable-popup-blocking')
+    chrome_options.add_argument("--start-maximized")
 
     chrome_options.add_experimental_option("detach", True)
     servico = Service(ChromeDriverManager().install())
@@ -512,12 +517,14 @@ def mensagem_automatica():
 
 
         if vencimento is not None:
+            
+            vencimento_formatado = int(vencimento)
 
             data_atual = datetime.now()
             data_antecipada = data_atual + timedelta(days=1)
 
             # Faz a verificação da data, caso seja um dia antes do vencimento ele enviará a mensagem, senão irá ignorar
-            if data_antecipada.day == vencimento:
+            if data_antecipada.day == vencimento_formatado:
 
                 # Caso o número seja vazio ele é alertado e registrado na planilha "Planilha de Reenvio"
                 if telefone is None or telefone == '' or telefone == 'None':
@@ -560,26 +567,24 @@ Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã).'''
 
                     telefone = str(telefone)
                     
-                    if '(' in telefone or ')' in telefone:
-                        telefone_formatado = telefone.replace('(', '').replace(')', '')
+                    if '(' in telefone or ')' or '.0' in telefone or '-' in telefone or '.' in telefone:
+                        telefone_formatado = telefone.replace('(', '').replace(')', '').replace('.0', '').replace('-', '').replace('.', '')
+                        ctt = int(telefone_formatado)
 
-                        telefone_formatado = f'{float(telefone_formatado):.0f}'
-                    
-                    else:
-                        telefone_formatado = f'{float(telefone):.0f}'
-
+                    print(ctt)
 
                     navegador = webdriver.Chrome(service=servico, options=chrome_options)
-                    navegador.get(f'https://web.whatsapp.com/send?phone={telefone_formatado}&text={quote(msg)}')
+                    navegador.get(f'https://web.whatsapp.com/send?phone={ctt}&text={quote(msg)}')
 
 
                     WebDriverWait(navegador, 6000).until(
-                        EC.element_to_be_clickable((By.XPATH, load_da_pagina))
+                        EC.presence_of_element_located((By.XPATH, load_da_pagina))
                     )
                                  
-                    sleep(3)
+                    sleep(2)
 
-                    numero_invalido = WebDriverWait(navegador, 3).until(
+
+                    WebDriverWait(navegador, 3).until(
                         EC.element_to_be_clickable((By.XPATH, botao_invalido))
                     )
                     
@@ -597,7 +602,7 @@ Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã).'''
                     while sheet.cell(row=linha, column=coluna).value is not None:
                         linha += 1
 
-                    dados = [f'{nome}', f'{float(telefone):.0f}', f'{vencimento}', 'Número Inválido']
+                    dados = [f'{nome}', f'{ctt}', f'{vencimento}', 'Número Inválido']
                     
                     for col, dado in enumerate(dados, start=1):
                 
@@ -605,7 +610,6 @@ Olá {nome.title()}, seu boleto vence dia {vencimento} (amanhã).'''
                     
                     workbook.save('Não Enviados/Planilha de Reenvio.xlsx')
                     
-
 
                 except Exception as error:
                    
@@ -665,6 +669,7 @@ def reenviar_mensagem():
     chrome_options.add_argument('--profile-directory=Default')
     chrome_options.add_argument('--disable-extensions')
     chrome_options.add_argument('--disable-popup-blocking')
+    chrome_options.add_argument("--start-maximized")
 
     chrome_options.add_experimental_option("detach", True)
     servico = Service(ChromeDriverManager().install())
